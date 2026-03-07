@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import styled, { createGlobalStyle, keyframes } from "styled-components";
 import About from "./components/About";
@@ -9,8 +8,6 @@ import Contacts from "./components/Contacts";
 import ServiceModal from "./components/ServiceModal";
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
-
   :root{
     --bg: #0f0f12;
     --text: #f3f4f6;
