@@ -5,6 +5,7 @@ import Projects from "./components/Projects";
 import Skils from "./components/Skils";
 import Benefits from "./components/Benefits";
 import Contacts from "./components/Contacts";
+import Reports from "./components/Reports";
 import ServiceModal from "./components/ServiceModal";
 
 const GlobalStyle = createGlobalStyle`
@@ -339,6 +340,7 @@ function App() {
       { id: "benefits", label: "Можливості" },
       { id: "projects", label: "Проєкти" },
       { id: "skills", label: "Навички" },
+      { id: "reports", label: "Відгуки"},
       { id: "contacts", label: "Контакти" }
     ],
     []
@@ -482,6 +484,7 @@ function App() {
       <Benefits />
       <Projects />
       <Skils />
+      <Reports/>
       <Contacts />
     </>
   );
