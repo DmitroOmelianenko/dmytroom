@@ -1,493 +1,321 @@
-import React, { useEffect, useMemo, useState } from "react";
-import styled, { createGlobalStyle, keyframes } from "styled-components";
+import React, { useEffect, useState } from "react";
+import styled, { createGlobalStyle } from "styled-components";
 import About from "./components/About";
 import Projects from "./components/Projects";
-import Skils from "./components/Skils";
-import Benefits from "./components/Benefits";
+import Technologies from "./components/Technologies";
 import Contacts from "./components/Contacts";
 import Reports from "./components/Reports";
+import Certificates from "./components/Certificates";
 import ServiceModal from "./components/ServiceModal";
-
 const GlobalStyle = createGlobalStyle`
-  :root{
-    --bg: #0f0f12;
-    --text: #f3f4f6;
-    --muted: rgba(243,244,246,.72);
-    --accent: #b41212;
-    --accent2: #ffcc00;
-  }
-  *{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
-  body{
-    margin:0;
-    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background: radial-gradient(1200px 700px at 20% -10%, rgba(180,18,18,.20), transparent 60%),
-                radial-gradient(1000px 600px at 85% 0%, rgba(255,204,0,.10), transparent 55%),
-                var(--bg);
-    color: var(--text);
-  }
+ :root{
+ --bg: #101113;
+ --surface: #17191d;
+ --surface-2: #202329;
+ --line: rgba(255,255,255,.1);
+ --text: #f5f1e8;
+ --muted: #a9a59d;
+ --primary: #d86538;
+ --primaryHover: #ed7948;
+ --button-text: #ffffff;
+ --container: 1200px;
+ }
+ :root[data-theme="light"]{
+ --bg: #f4f1eb;
+ --surface: #fffdf9;
+ --surface-2: #ece7df;
+ --line: rgba(31,34,38,.12);
+ --text: #1f2226;
+ --muted: #6e706d;
+ --primary: #b84826;
+ --primaryHover: #96391d;
+ --button-text: #111214;
+ }
+ *{
+ box-sizing: border-box;
+ }
+ html{
+ scroll-behavior: smooth;
+ }
+ body{
+ margin:0;
+ background: var(--bg);
+ color: var(--text);
+ font-family: "Manrope", sans-serif;
+ -webkit-font-smoothing: antialiased;
+ }
+ a{
+ color: inherit;
+ text-decoration: none;
+ }
+1
+ button{
+ font-family: inherit;
+ }
 `;
-
-const slideDown = keyframes`
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+const Header = styled.header`
+ position:sticky;
+ top:0;
+ z-index:100;
+ background:color-mix(in srgb, var(--bg) 92%, transparent);
+ border-bottom:1px solid var(--line);
+ backdrop-filter:blur(12px);
+ .container{
+ max-width:var(--container);
+ margin:0 auto;
+ padding:18px 20px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:18px;
+ }
+ .logo{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ border:0;
+ padding:0;
+ background:transparent;
+ color:var(--text);
+ text-align:left;
+ cursor:pointer;
+ }
+ .mark{
+ width:40px;
+ height:40px;
+ border-radius:12px;
+ background:white;
+ color:#111;
+ display:grid;
+ place-items:center;
+ font-size:14px;
+ font-weight:700;
+ }
+ .brand{ display:flex; flex-direction:column; gap:2px; }
+ .brand strong{ font-size:14px; font-weight:600; }
+ .brand span{ font-size:13px; color:var(--muted); }
+ nav{ display:flex; align-items:center; gap:4px; }
+ nav button{
+ border:0;
+ background:transparent;
+ color:var(--muted);
+ padding:10px 9px;
+ border-radius:8px;
+ font-size:14px;
+ font-weight:500;
+ cursor:pointer;
+ transition:.2s ease;
+ }
+ nav button:hover{ color:var(--text); background:var(--surface-2); }
+ .menuToggle{
+ display:none;
+ width:42px;
+ height:40px;
+ border:1px solid var(--line);
+ background:var(--surface);
+ color:var(--text);
+ border-radius:10px;
+ cursor:pointer;
+ }
+ .menuToggle .bar{ display:block; width:18px; height:2px; margin:4px auto; background:currentColor; border-radius:2px; }
+ .tools{ display:flex; align-items:center; gap:8px; }
+ .themeToggle,.cta{
+ padding:12px 18px;
+ border-radius:12px;
+ border:0;
+ color:var(--text);
+ font-size:14px;
+ font-weight:600;
+ cursor:pointer;
+ transition:.2s ease;
+ }
+ .themeToggle{ background:var(--surface); border:1px solid var(--line); padding:10px 12px; }
+ .themeToggle:hover{ border-color:var(--primary); }
+ .cta{ background:var(--primary); color:var(--button-text); }
+ .cta:hover{ background:var(--primaryHover); }
+ @media(max-width:768px){
+ .container{ padding:14px; }
+ nav{ display:none; }
+ .menuToggle{ display:block; }
+ .tools{ margin-left:auto; }
+ .cta{ padding:10px 12px; }
+ }
+ .mobileMenuOverlay{
+ position:fixed;
+ inset:0;
+ z-index:200;
+ display:grid;
+ align-items:flex-start;
+ justify-content:center;
+ padding:20px;
+ overflow-y:auto;
+ background:rgba(10,10,12,.68);
+ backdrop-filter:blur(8px);
+ }
+ .mobileMenuModal{
+ width:min(360px,100%);
+ max-height:calc(100dvh - 40px);
+ overflow-y:auto;
+ padding:24px;
+ background:var(--surface);
+ border:1px solid var(--line);
+ border-radius:16px;
+ box-shadow:0 24px 70px rgba(0,0,0,.28);
+ }
+ .mobileMenuHeader{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+ .mobileMenuTitle{ margin:0; color:var(--text); font-size:20px; }
+ .mobileMenuClose{ width:36px; height:36px; border:1px solid var(--line); border-radius:10px; background:transparent; color:var(--text); font-size:20px; cursor:pointer; }
+ .mobileMenuLinks{ display:grid; gap:6px; }
+ .mobileMenuLinks button{ width:100%; border:0; border-radius:9px; padding:13px 12px; background:transparent; color:var(--text); text-align:left; font-size:15px; cursor:pointer; }
+ .mobileMenuLinks button:hover{ background:var(--surface-2); }
 `;
+const MobileMenuOverlay = styled.div`
+ position:fixed;
+ inset:0;
+ z-index:200;
+ display:flex;
+ align-items:flex-start;
+ justify-content:center;
+ padding:72px 16px 24px;
+ overflow-y:auto;
+ background:rgba(10,10,12,.68);
+ backdrop-filter:blur(8px);
 
-const overlayIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
+ .mobileMenuModal{
+ width:min(360px,100%);
+ max-height:calc(100dvh - 96px);
+ overflow-y:auto;
+ padding:24px;
+ background:var(--surface);
+ border:1px solid var(--line);
+ border-radius:16px;
+ box-shadow:0 24px 70px rgba(0,0,0,.28);
+ }
+ .mobileMenuHeader{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+ .mobileMenuTitle{ margin:0; color:var(--text); font-size:20px; }
+ .mobileMenuClose{ width:42px; height:42px; border:1px solid var(--line); border-radius:10px; background:transparent; color:var(--text); font-size:22px; cursor:pointer; }
+ .mobileMenuLinks{ display:grid; gap:6px; }
+ .mobileMenuLinks button{ width:100%; border:0; border-radius:9px; padding:14px 12px; background:transparent; color:var(--text); text-align:left; font-size:15px; cursor:pointer; }
+ .mobileMenuLinks button:hover{ background:var(--surface-2); }
 `;
-
-const sheetIn = keyframes`
-  from { transform: translateY(-10px) scale(.98); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
-`;
-
-const StyledHeader = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  backdrop-filter: blur(10px);
-  background: rgba(15,15,18,.74);
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  animation: ${slideDown} .35s ease both;
-
-  .bar {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-  }
-
-  .brandWrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 220px;
-  }
-
-  .logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, rgba(180,18,18,.95), rgba(255,204,0,.75));
-    box-shadow: 0 12px 28px rgba(0,0,0,.35);
-    border: 1px solid rgba(255,255,255,.14);
-    color: #fff;
-    font-weight: 900;
-    letter-spacing: .5px;
-    font-size: 14px;
-    line-height: 1;
-    user-select: none;
-  }
-
-  .brand {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .brandTop {
-    font-weight: 900;
-    letter-spacing: .5px;
-    font-size: 14px;
-    line-height: 1.1;
-    color: #fff;
-  }
-
-  .brandSub {
-    font-size: 12px;
-    color: rgba(255,255,255,.72);
-    line-height: 1.1;
-  }
-
-  .nav {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .link {
-    border: 1px solid transparent;
-    background: transparent;
-    color: #fff;
-    padding: 10px 12px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 13px;
-    cursor: pointer;
-    transition: transform .16s ease, background .16s ease, border-color .16s ease, color .16s ease;
-    white-space: nowrap;
-  }
-
-  .link:hover {
-    transform: translateY(-1px);
-    border-color: rgba(255,255,255,.14);
-    background: rgba(255,255,255,.06);
-  }
-
-  .linkActive {
-    border-color: rgba(255,204,0,.26);
-    background: rgba(255,204,0,.10);
-    color: #fff;
-  }
-
-  .cta {
-    border: 0;
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-weight: 900;
-    font-size: 13px;
-    cursor: pointer;
-    color: #fff;
-    background: linear-gradient(135deg, var(--accent), #8a0e0e);
-    box-shadow: 0 10px 28px rgba(180,18,18,.22);
-    transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
-  }
-
-  .cta:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.03);
-    box-shadow: 0 14px 34px rgba(180,18,18,.30);
-  }
-
-  .cta:active { transform: translateY(0); }
-
-  .burger {
-    display: none;
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.06);
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    transition: transform .16s ease, background .16s ease, border-color .16s ease;
-  }
-
-  .burger:hover {
-    transform: translateY(-1px);
-    border-color: rgba(255,255,255,.18);
-    background: rgba(255,255,255,.08);
-  }
-
-  .burgerIcon {
-    width: 20px;
-    height: 14px;
-    position: relative;
-  }
-
-  .burgerIcon span{
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    border-radius: 4px;
-    background: rgba(255,255,255,.92);
-    transition: transform .18s ease, top .18s ease, opacity .18s ease;
-  }
-
-  .burgerIcon span:nth-child(1){ top: 0; }
-  .burgerIcon span:nth-child(2){ top: 6px; }
-  .burgerIcon span:nth-child(3){ top: 12px; }
-
-  .burgerOpen .burgerIcon span:nth-child(1){ top: 6px; transform: rotate(45deg); }
-  .burgerOpen .burgerIcon span:nth-child(2){ opacity: 0; }
-  .burgerOpen .burgerIcon span:nth-child(3){ top: 6px; transform: rotate(-45deg); }
-
-  .mobileOverlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.62);
-    backdrop-filter: blur(10px);
-    z-index: 999;
-    display: grid;
-    place-items: start center;
-    padding: 16px;
-    animation: ${overlayIn} .18s ease both;
-  }
-
-  .mobileSheet{
-    width: 100%;
-    max-width: 560px;
-    border-radius: 18px;
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(15,15,18,.92);
-    box-shadow: 0 24px 70px rgba(0,0,0,.55);
-    padding: 14px;
-    animation: ${sheetIn} .18s ease both;
-  }
-
-  .mobileTop{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 6px 4px 10px;
-    border-bottom: 1px solid rgba(255,255,255,.08);
-    margin-bottom: 10px;
-  }
-
-  .mobileTitle{
-    font-weight: 900;
-    letter-spacing: .4px;
-    font-size: 13px;
-    color: rgba(255,255,255,.92);
-  }
-
-  .closeBtn{
-    width: 40px;
-    height: 40px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.06);
-    color: #fff;
-    cursor: pointer;
-    transition: transform .16s ease, background .16s ease, border-color .16s ease;
-    display: grid;
-    place-items: center;
-  }
-
-  .closeBtn:hover{
-    transform: translateY(-1px);
-    border-color: rgba(255,255,255,.18);
-    background: rgba(255,255,255,.08);
-  }
-
-  .mobileNav{
-    display: grid;
-    gap: 10px;
-    padding: 4px;
-  }
-
-  .mobileLink{
-    width: 100%;
-    text-align: left;
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(255,255,255,.04);
-    color: #fff;
-    padding: 12px 12px;
-    border-radius: 14px;
-    font-weight: 900;
-    font-size: 13px;
-    cursor: pointer;
-    transition: transform .16s ease, background .16s ease, border-color .16s ease;
-  }
-
-  .mobileLink:hover{
-    transform: translateY(-1px);
-    border-color: rgba(255,255,255,.18);
-    background: rgba(255,255,255,.06);
-  }
-
-  .mobileLinkActive{
-    border-color: rgba(255,204,0,.26);
-    background: rgba(255,204,0,.10);
-  }
-
-  .mobileCta{
-    width: 100%;
-    margin-top: 10px;
-    border: 0;
-    padding: 12px 14px;
-    border-radius: 14px;
-    font-weight: 900;
-    font-size: 13px;
-    cursor: pointer;
-    color: #fff;
-    background: linear-gradient(135deg, var(--accent), #8a0e0e);
-    box-shadow: 0 10px 28px rgba(180,18,18,.22);
-    transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
-  }
-
-  .mobileCta:hover{
-    transform: translateY(-1px);
-    filter: brightness(1.03);
-    box-shadow: 0 14px 34px rgba(180,18,18,.30);
-  }
-
-  @media (max-width: 820px) {
-    .brandWrap { min-width: auto; }
-    .brandSub { display: none; }
-  }
-
-  @media (max-width: 620px) {
-    .brand { display: none; }
-  }
-
-  @media (max-width: 720px) {
-    .nav { display: none; }
-    .burger { display: inline-flex; }
-  }
-`;
-
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [active, setActive] = useState("about");
-
-  const sections = useMemo(
-    () => [
-      { id: "about", label: "Про мене" },
-      { id: "benefits", label: "Можливості" },
-      { id: "projects", label: "Проєкти" },
-      { id: "skills", label: "Навички" },
-      { id: "reports", label: "Відгуки"},
-      { id: "contacts", label: "Контакти" }
-    ],
-    []
-  );
-
-  const scrollToSection = (sectionId) => {
-    const el = document.getElementById(sectionId);
-    if (!el) return;
-    const header = document.querySelector("header");
-    const offset = header ? header.getBoundingClientRect().height : 0;
-    const top = el.getBoundingClientRect().top + window.scrollY - offset + 1;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
-
+  const [modal, setModal] = useState(false);
+  const [page, setPage] = useState("home");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("portfolio-theme") || "dark");
+  const sections = [
+    { id: "about", label: "Про мене" },
+    { id: "projects", label: "Проєкти" },
+    { id: "technologies", label: "Навички" },
+    { id: "contacts", label: "Контакти" }
+  ];
   useEffect(() => {
-    const header = document.querySelector("header");
-    const offset = header ? header.getBoundingClientRect().height : 0;
-
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0))[0];
-        if (visible?.target?.id) setActive(visible.target.id);
-      },
-      {
-        root: null,
-        rootMargin: `-${Math.round(offset + 10)}px 0px -55% 0px`,
-        threshold: [0.08, 0.14, 0.22, 0.35]
-      }
-    );
-
-    sections.forEach((s) => {
-      const el = document.getElementById(s.id);
-      if (el) obs.observe(el);
-    });
-
-    return () => obs.disconnect();
-  }, [sections]);
-
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("portfolio-theme", theme);
+  }, [theme]);
   useEffect(() => {
-    if (!mobileOpen) return;
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") setMobileOpen(false);
+    const closeMenu = (event) => {
+      if (event.key === "Escape") setIsMenuOpen(false);
     };
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", closeMenu);
+    return () => window.removeEventListener("keydown", closeMenu);
+  }, []);
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
     return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
     };
-  }, [mobileOpen]);
-
-  const handleMobileNav = (id) => {
-    setMobileOpen(false);
-    scrollToSection(id);
+  }, [isMenuOpen]);
+  const navigateTo = (nextPage) => {
+    setPage(nextPage);
+    setIsMenuOpen(false);
   };
-
-  const openOrderFromMobile = () => {
-    setMobileOpen(false);
-    setIsModalOpen(true);
+  const scrollTo = (id) => {
+    navigateTo("home");
+    window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+    }, 0);
   };
-
   return (
     <>
       <GlobalStyle />
-      <StyledHeader>
-        <div className="bar">
-          <div className="brandWrap">
-            <div className="logo" aria-hidden="true">DO</div>
+      <Header>
+        <div className="container">
+          <button type="button" className="logo" onClick={() => navigateTo("home")} aria-label="На головну">
+            <div className="mark">DO</div>
             <div className="brand">
-              <div className="brandTop">Dmytro Omelianenko</div>
-              <div className="brandSub">Frontend • React</div>
-            </div>
-          </div>
-
-          <nav className="nav" aria-label="Навігація">
-            {sections.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className={`link ${active === s.id ? "linkActive" : ""}`}
-                onClick={() => scrollToSection(s.id)}
-              >
-                {s.label}
-              </button>
-            ))}
-            <button type="button" className="cta" onClick={() => setIsModalOpen(true)}>
-              Замовити
-            </button>
-          </nav>
-
-          <button
-            type="button"
-            className={`burger ${mobileOpen ? "burgerOpen" : ""}`}
-            aria-label="Меню"
-            aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen((v) => !v)}
-          >
-            <div className="burgerIcon" aria-hidden="true">
-              <span />
-              <span />
-              <span />
+              <strong>Dmytro Omelianenko</strong>
+              <span>Frontend-розробник</span>
             </div>
           </button>
-        </div>
-
-        {mobileOpen && (
-          <div className="mobileOverlay" onClick={() => setMobileOpen(false)}>
-            <div className="mobileSheet" onClick={(e) => e.stopPropagation()}>
-              <div className="mobileTop">
-                <div className="mobileTitle">Меню</div>
-                <button type="button" className="closeBtn" onClick={() => setMobileOpen(false)} aria-label="Закрити">
-                  ✕
-                </button>
-              </div>
-
-              <div className="mobileNav">
-                {sections.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    className={`mobileLink ${active === s.id ? "mobileLinkActive" : ""}`}
-                    onClick={() => handleMobileNav(s.id)}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-                <button type="button" className="mobileCta" onClick={openOrderFromMobile}>
-                  Замовити
-                </button>
-              </div>
-            </div>
+          <button
+            type="button"
+            className="menuToggle"
+            onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isMenuOpen ? "Закрити меню" : "Відкрити меню"}
+          >
+            <span className="bar" />
+            <span className="bar" />
+            <span className="bar" />
+          </button>
+          <nav id="main-navigation" className={isMenuOpen ? "open" : ""} aria-label="Основна навігація">
+            <button type="button" onClick={() => navigateTo("home")}>Головна</button>
+            {sections.map(section => (
+              <button
+                type="button"
+                key={section.id}
+                onClick={() => scrollTo(section.id)}
+              >
+                {section.label}
+              </button>
+            ))}
+            <button type="button" onClick={() => navigateTo("certificates")}>Сертифікати</button>
+            <button type="button" onClick={() => navigateTo("reports")}>Відгуки</button>
+          </nav>
+          <div className="tools">
+            <button type="button" className="themeToggle" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Змінити тему">
+              {theme === "dark" ? "☀ Світла" : "◐ Темна"}
+            </button>
+            <button type="button" className="cta" onClick={() => setModal(true)}>Обговорити проєкт</button>
           </div>
-        )}
-      </StyledHeader>
-
-      <ServiceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <About onOrderClick={() => setIsModalOpen(true)} />
-      <Benefits />
-      <Projects />
-      <Skils />
-      <Reports/>
-      <Contacts />
+        </div>
+      </Header>
+      {isMenuOpen && (
+        <MobileMenuOverlay onClick={() => setIsMenuOpen(false)}>
+          <div className="mobileMenuModal" onClick={(event) => event.stopPropagation()}>
+            <div className="mobileMenuHeader">
+              <h2 className="mobileMenuTitle">Навігація</h2>
+              <button type="button" className="mobileMenuClose" onClick={() => setIsMenuOpen(false)} aria-label="Закрити меню">×</button>
+            </div>
+            <nav id="mobile-navigation" className="mobileMenuLinks" aria-label="Мобільна навігація">
+              <button type="button" onClick={() => navigateTo("home")}>Головна</button>
+              {sections.map((section) => (
+                <button type="button" key={section.id} onClick={() => scrollTo(section.id)}>{section.label}</button>
+              ))}
+              <button type="button" onClick={() => navigateTo("certificates")}>Сертифікати</button>
+              <button type="button" onClick={() => navigateTo("reports")}>Відгуки</button>
+            </nav>
+          </div>
+        </MobileMenuOverlay>
+      )}
+      {page === "home" && <>
+        <About />
+        <Projects />
+        <Technologies />
+        <Reports />
+        <Contacts />
+      </>}
+      {page === "certificates" && <Certificates />}
+      {page === "reports" && <Reports />}
+      <ServiceModal
+        isOpen={modal}
+        onClose={() => setModal(false)}
+      />
     </>
   );
 }
-
 export default App;

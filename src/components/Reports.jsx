@@ -26,6 +26,23 @@ const StyledReports = styled.section`
   --accent-2: #ffcc00;
   --success: #22c55e;
   --danger: #ef4444;
+  --field-border: #8d5947;
+  --field-bg: #191719;
+  --accent-soft: rgba(216, 101, 56, 0.16);
+
+  :root[data-theme="light"] & {
+    --bg: #ebe7df;
+    --card: rgba(255, 255, 255, 0.72);
+    --card-strong: rgba(255, 255, 255, 0.94);
+    --border: rgba(31, 34, 38, 0.12);
+    --text: #1f2226;
+    --muted: rgba(31, 34, 38, 0.66);
+    --accent: #b84826;
+    --accent-2: #a86b00;
+    --field-border: #397c78;
+    --field-bg: #fffdf8;
+    --accent-soft: rgba(57, 124, 120, 0.12);
+  }
 
   background:
     radial-gradient(1000px 600px at 10% -10%, rgba(180, 18, 18, 0.22), transparent 60%),
@@ -84,11 +101,10 @@ const StyledReports = styled.section`
   }
 
   .panel {
-    background: linear-gradient(180deg, var(--card-strong), var(--card));
+    background: var(--card-strong);
     border: 1px solid var(--border);
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
     overflow: hidden;
     animation: ${fadeUp} 0.6s ease both;
   }
@@ -131,26 +147,27 @@ const StyledReports = styled.section`
   .input,
   .textarea {
     width: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--field-border);
+    background: var(--field-bg);
     color: var(--text);
-    border-radius: 16px;
+    border-radius: 10px;
     padding: 13px 14px;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
   }
 
   .input::placeholder,
   .textarea::placeholder {
-    color: rgba(243, 244, 246, 0.44);
+    color: var(--muted);
   }
 
   .input:focus,
   .textarea:focus {
-    border-color: rgba(255, 204, 0, 0.28);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.08);
+    border-color: var(--accent-2);
+    background: var(--field-bg);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    transform: translateY(-1px);
   }
 
   .textarea {
@@ -175,10 +192,10 @@ const StyledReports = styled.section`
   .starButton {
     width: 42px;
     height: 42px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(255, 255, 255, 0.45);
+    border-radius: 10px;
+    border: 1px solid var(--field-border);
+    background: var(--field-bg);
+    color: var(--muted);
     font-size: 20px;
     cursor: pointer;
     transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
@@ -186,14 +203,14 @@ const StyledReports = styled.section`
 
   .starButton:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 204, 0, 0.25);
+    border-color: var(--accent-2);
     color: var(--accent-2);
   }
 
   .starButton.active {
     color: var(--accent-2);
-    border-color: rgba(255, 204, 0, 0.28);
-    background: rgba(255, 204, 0, 0.08);
+    border-color: var(--accent-2);
+    background: var(--accent-soft);
   }
 
   .uploadHint {
@@ -224,21 +241,21 @@ const StyledReports = styled.section`
   .submit {
     margin-top: 4px;
     border: 0;
-    border-radius: 16px;
+    border-radius: 10px;
     padding: 14px 18px;
-    background: linear-gradient(135deg, var(--accent), #8a0e0e);
+    background: var(--accent);
     color: white;
     font-size: 14px;
     font-weight: 900;
     cursor: pointer;
-    box-shadow: 0 14px 34px rgba(180, 18, 18, 0.28);
+    box-shadow: 0 10px 22px rgba(216, 101, 56, 0.24);
     transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
   }
 
   .submit:hover {
     transform: translateY(-2px);
     filter: brightness(1.03);
-    box-shadow: 0 18px 40px rgba(180, 18, 18, 0.36);
+    box-shadow: 0 14px 28px rgba(216, 101, 56, 0.32);
   }
 
   .submit:disabled {
@@ -290,17 +307,17 @@ const StyledReports = styled.section`
     grid-template-columns: 72px 1fr;
     gap: 14px;
     align-items: start;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
     padding: 16px;
     transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
   }
 
   .reviewCard:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 204, 0, 0.2);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-2);
+    background: var(--card-strong);
   }
 
   .avatar {
@@ -372,6 +389,12 @@ const StyledReports = styled.section`
     white-space: pre-line;
   }
 
+  :root[data-theme="light"] & {
+    .reviewText { color: rgba(31, 34, 38, 0.82); }
+    .date { color: rgba(31, 34, 38, 0.5); }
+    .reviewCard:hover { background: rgba(255, 255, 255, 0.9); }
+  }
+
   .skeleton {
     height: 118px;
     border-radius: 20px;
@@ -395,8 +418,8 @@ const StyledReports = styled.section`
   }
 
   .avatarHelpButton {
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--field-border);
+    background: var(--field-bg);
     color: var(--text);
     border-radius: 12px;
     padding: 8px 14px;
@@ -413,9 +436,9 @@ const StyledReports = styled.section`
 
   .avatarHelpButton:hover {
     transform: translateY(-1px);
-    border-color: rgba(255, 204, 0, 0.28);
-    background: rgba(255, 204, 0, 0.08);
-    color: #fff1b8;
+    border-color: var(--accent-2);
+    background: var(--accent-soft);
+    color: var(--text);
     box-shadow: 0 10px 24px rgba(255, 204, 0, 0.08);
   }
 
@@ -606,8 +629,8 @@ const StyledReports = styled.section`
     }
 
     .avatarHelpRow {
-      align-items: stretch;
-    }
+        border: 1px solid var(--field-border);
+        border-radius: 16px;
 
     .avatarHelpButton {
       width: 100%;

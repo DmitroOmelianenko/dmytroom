@@ -232,7 +232,7 @@ export default function ServiceModal({ isOpen, onClose }) {
           </div>
 
           <select name="service" value={formData.service} onChange={handleChange} required>
-            <option value="">Виберіть послугу *</option>
+            <option value="">Оберіть послугу *</option>
             <option value="website">Розробка вебсайту</option>
             <option value="markup">Верстка сайту</option>
             <option value="consultation">Консультація</option>
